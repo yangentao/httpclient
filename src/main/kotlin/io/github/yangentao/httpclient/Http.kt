@@ -2,6 +2,7 @@
 
 package io.github.yangentao.httpclient
 
+import io.github.yangentao.httpbasic.HttpFileParam
 import io.github.yangentao.kson.KsonObject
 import java.io.*
 import java.net.HttpURLConnection
@@ -38,12 +39,18 @@ fun httpMultipart(url: String, block: HttpMultipart.() -> Unit): HttpResult {
     return h.request()
 }
 
+/**
+ * Http GET
+ */
 class HttpGet(url: String) : HttpReq(url, "GET") {
 
     override fun onSend(connection: HttpURLConnection) {
     }
 }
 
+/**
+ * Http POST
+ */
 class HttpPost(url: String) : HttpReq(url, "POST") {
 
     init {
@@ -67,6 +74,9 @@ class HttpPost(url: String) : HttpReq(url, "POST") {
     }
 }
 
+/**
+ * Http POST Body
+ */
 class HttpRaw(url: String) : HttpReq(url, "POST") {
     private lateinit var rawData: ByteArray
 
@@ -108,27 +118,30 @@ class HttpRaw(url: String) : HttpReq(url, "POST") {
     }
 }
 
+/**
+ * Http POST multipart/form-data
+ */
 class HttpMultipart(url: String) : HttpReq(url, "POST") {
     private val BOUNDARY = UUID.randomUUID().hexText
 
-    private val fileList = ArrayList<FileParam>()
+    private val fileList = ArrayList<HttpFileParam>()
 
     init {
         headers.contentType = "multipart/form-data; boundary=$BOUNDARY"
     }
 
-    fun file(fileParam: FileParam): HttpMultipart {
+    fun file(fileParam: HttpFileParam): HttpMultipart {
         fileList.add(fileParam)
         return this
     }
 
     fun file(key: String, file: File): HttpMultipart {
-        val p = FileParam(key, file)
+        val p = HttpFileParam(key, file.name, file)
         return file(p)
     }
 
-    fun file(key: String, file: File, block: FileParam.() -> Unit): HttpMultipart {
-        val p = FileParam(key, file)
+    fun file(key: String, file: File, block: HttpFileParam.() -> Unit): HttpMultipart {
+        val p = HttpFileParam(key, file.name, file)
         p.block()
         return file(p)
     }
@@ -170,7 +183,7 @@ class HttpMultipart(url: String) : HttpReq(url, "POST") {
         if (fileList.isNotEmpty()) {
             for (fp in fileList) {
                 writeln(os, "--", BOUNDARY)
-                writeln(os, "Content-Disposition:form-data;name=\"${fp.key}\";filename=\"${fp.filename.encodedURL}\"")
+                writeln(os, "Content-Disposition:form-data;name=\"${fp.name}\";filename=\"${fp.filename.encodedURL}\"")
                 writeln(os, "Content-Type:${fp.mime}")
                 writeln(os, "Content-Transfer-Encoding: binary")
                 writeln(os)
@@ -178,7 +191,7 @@ class HttpMultipart(url: String) : HttpReq(url, "POST") {
                 if (os is SizeStream) {
                     os.incSize(total)
                 } else {
-                    copyStream(FileInputStream(fp.file), true, os, false, total, fp.progress)
+                    copyStream(FileInputStream(fp.file), true, os, false, total, (fp as? FileParam)?.progress)
                 }
                 writeln(os)
             }

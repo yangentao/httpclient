@@ -23,6 +23,7 @@ val descLib = "Http client ,Kotlin."
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
 //    maven("https://app800.cn/maven/repository/public/")
 }
@@ -31,7 +32,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
-    api("io.github.yangentao:httpbasic:[1.0.0,)")
+    api("io.github.yangentao:httpbasic:[1.0.1,)")
     api("io.github.yangentao:kson:[1.0.1,)")
 }
 
