@@ -1,5 +1,6 @@
 package io.github.yangentao.httpclient
 
+import io.github.yangentao.httpbasic.HttpFile
 import io.github.yangentao.httpbasic.HttpFileParam
 import io.github.yangentao.httpbasic.Mimes
 import java.io.File
@@ -8,4 +9,4 @@ import java.io.File
 /**
  * File Params, Multipart POST
  */
-class FileParam(name: String, file: File, filename: String = file.name, mime: String = Mimes.ofFile(filename), val progress: HttpProgress? = null) : HttpFileParam(name, filename, file, mime)
+class FileParam(name: String, file: File, filename: String = file.name, mime: String = Mimes.ofFile(filename), val progress: HttpProgress? = null) : HttpFileParam(name, HttpFile(file, filename, mime))

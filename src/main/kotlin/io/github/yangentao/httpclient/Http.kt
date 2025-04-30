@@ -2,6 +2,7 @@
 
 package io.github.yangentao.httpclient
 
+import io.github.yangentao.httpbasic.HttpFile
 import io.github.yangentao.httpbasic.HttpFileParam
 import io.github.yangentao.kson.KsonObject
 import java.io.*
@@ -136,13 +137,7 @@ class HttpMultipart(url: String) : HttpReq(url, "POST") {
     }
 
     fun file(key: String, file: File): HttpMultipart {
-        val p = HttpFileParam(key, file.name, file)
-        return file(p)
-    }
-
-    fun file(key: String, file: File, block: HttpFileParam.() -> Unit): HttpMultipart {
-        val p = HttpFileParam(key, file.name, file)
-        p.block()
+        val p = HttpFileParam(key, HttpFile(file))
         return file(p)
     }
 
@@ -162,7 +157,7 @@ class HttpMultipart(url: String) : HttpReq(url, "POST") {
 
     override fun preConnect(connection: HttpURLConnection) {
         super.preConnect(connection)
-        if (fileList.size > 0) {
+        if (fileList.isNotEmpty()) {
             val os = SizeStream()
             sendMultipart(os)
             connection.setFixedLengthStreamingMode(os.size)

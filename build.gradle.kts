@@ -16,7 +16,7 @@ plugins {
 
 group = "io.github.yangentao"
 
-version = "1.0.1"
+version = "1.0.2"
 val artifactName = "httpclient"
 val githubLib = "httpclient"
 val descLib = "Http client ,Kotlin."
@@ -32,7 +32,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
-    api("io.github.yangentao:httpbasic:[1.0.2,)")
+    api("io.github.yangentao:httpbasic:[1.0.3,)")
     api("io.github.yangentao:kson:[1.0.1,)")
 }
 
