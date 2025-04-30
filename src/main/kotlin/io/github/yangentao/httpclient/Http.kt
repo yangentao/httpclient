@@ -15,25 +15,25 @@ import java.util.zip.GZIPInputStream
 /**
  * Created by entaoyang@163.com on 2016/12/20.
  */
-fun httpGet(url: String, block: HttpGet.() -> Unit): HttpResult {
+fun httpGet(url: String, block: HttpGet.() -> Unit): ReqResult {
     val h = HttpGet(url)
     h.block()
     return h.request()
 }
 
-fun httpPost(url: String, block: HttpPost.() -> Unit): HttpResult {
+fun httpPost(url: String, block: HttpPost.() -> Unit): ReqResult {
     val h = HttpPost(url)
     h.block()
     return h.request()
 }
 
-fun httpRaw(url: String, block: HttpRaw.() -> Unit): HttpResult {
+fun httpRaw(url: String, block: HttpRaw.() -> Unit): ReqResult {
     val h = HttpRaw(url)
     h.block()
     return h.request()
 }
 
-fun httpMultipart(url: String, block: HttpMultipart.() -> Unit): HttpResult {
+fun httpMultipart(url: String, block: HttpMultipart.() -> Unit): ReqResult {
     val h = HttpMultipart(url)
     h.block()
     return h.request()
@@ -319,8 +319,8 @@ abstract class HttpReq(val url: String, val method: String = "GET") {
     }
 
     @Throws(IOException::class)
-    private fun onResponse(connection: HttpURLConnection): HttpResult {
-        val result = HttpResult(this.url).apply {
+    private fun onResponse(connection: HttpURLConnection): ReqResult {
+        val result = ReqResult(this.url).apply {
             code = connection.responseCode
             msg = connection.responseMessage
             contentType = connection.contentType
@@ -366,7 +366,7 @@ abstract class HttpReq(val url: String, val method: String = "GET") {
     protected abstract fun onSend(connection: HttpURLConnection)
 
     @Suppress("DEPRECATION")
-    fun request(): HttpResult {
+    fun request(): ReqResult {
         var connection: HttpURLConnection? = null
         try {
             dumpReq()
@@ -387,7 +387,7 @@ abstract class HttpReq(val url: String, val method: String = "GET") {
         } catch (ex: Exception) {
             ex.printStackTrace()
             printX(ex)
-            val result = HttpResult(this.url)
+            val result = ReqResult(this.url)
             result.exception = ex
             return result
         } finally {
@@ -395,7 +395,7 @@ abstract class HttpReq(val url: String, val method: String = "GET") {
         }
     }
 
-    fun download(saveto: File, progress: HttpProgress?): HttpResult {
+    fun download(saveto: File, progress: HttpProgress?): ReqResult {
         this.saveToFile = saveto
         this.progress = progress
         return request()

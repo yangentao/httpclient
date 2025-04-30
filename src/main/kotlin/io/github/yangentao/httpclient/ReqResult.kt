@@ -15,7 +15,7 @@ import java.net.URLDecoder
 import java.nio.charset.Charset
 import java.util.concurrent.TimeoutException
 
-class HttpResult(val url: String) {
+class ReqResult(val url: String) {
     var buffer: ByteArray? = null//如果Http.request参数给定了文件参数, 则,response是null
     var code: Int = 0//200
     var msg: String? = null//OK
